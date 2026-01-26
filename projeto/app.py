@@ -168,17 +168,22 @@ def calcular_curto_circuito(kva_transformador, tensao_secundaria=380, uk_percent
     """
     Calcula corrente de curto-circuito conforme IEC 60909/NBR 5410.
     """
+    import unicodedata
     alertas = []
+    
+    # Normalizar tipo_curto removendo acentos
+    tipo_curto_norm = unicodedata.normalize('NFKD', tipo_curto.lower()).encode('ASCII', 'ignore').decode('ASCII')
+    
     uk = uk_percent / 100
     zk_trafo = (tensao_secundaria ** 2) / (kva_transformador * 1000) * uk
     
-    if tipo_curto == 'trifasico':
+    if tipo_curto_norm == 'trifasico':
         ik_sec = (tensao_secundaria / np.sqrt(3)) / zk_trafo / 1000
         fator = 1.0
-    elif tipo_curto == 'bifasico':
+    elif tipo_curto_norm == 'bifasico':
         ik_sec = (tensao_secundaria / 2) / zk_trafo / 1000
         fator = np.sqrt(3)/2
-    elif tipo_curto == 'monofasico':
+    elif tipo_curto_norm == 'monofasico':
         ik_sec = tensao_secundaria / zk_trafo / 1000
         fator = 1.5
     else:
