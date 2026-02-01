@@ -1174,66 +1174,65 @@ if 'projeto_atual' not in st.session_state:
     st.session_state.projeto_atual = None
 if 'historico_calculos' not in st.session_state:
     st.session_state.historico_calculos = []
+if 'modo_sidebar' not in st.session_state:
+    st.session_state.modo_sidebar = "Novo Projeto"
 
 # ============ SIDEBAR - PROJETO & NAVEGAÇÃO ============
 with st.sidebar:
     st.title("📁 Sistema de Projetos")
+    st.divider()
     
-    # Seleção de projeto
-    modo_projeto = st.radio("Modo de Operação", ["📝 Novo Projeto", "📂 Carregar Projeto", "💾 Ferramentas"])
+    # Abas do sidebar
+    sidebar_tab1, sidebar_tab2, sidebar_tab3 = st.tabs(["Novo", "Carregador", "Ferramentas"])
     
-    if modo_projeto == "📝 Novo Projeto":
-        nome_novo_projeto = st.text_input("Nome do Projeto", placeholder="Ex: Edifício Comercial - Andar 5")
-        cliente = st.text_input("Cliente", placeholder="Ex: Empresa XYZ")
-        local = st.text_input("Local", placeholder="Ex: São Paulo - SP")
-        descricao = st.text_area("Descrição", placeholder="Detalhes do projeto")
+    with sidebar_tab1:
+        st.subheader("📝 Novo Projeto")
+        nome_novo_projeto = st.text_input("Nome do Projeto", placeholder="Ex: Edifício - Andar 5", key="sb_nome_projeto")
+        cliente = st.text_input("Cliente", placeholder="Ex: Empresa XYZ", key="sb_cliente")
+        local = st.text_input("Local", placeholder="Ex: São Paulo - SP", key="sb_local")
         
-        if st.button("✅ Criar Projeto", key="btn_novo_projeto"):
+        if st.button("✅ Criar Projeto", use_container_width=True, key="btn_criar_proj"):
             if nome_novo_projeto.strip():
                 novo_projeto = {
                     'nome': nome_novo_projeto,
                     'cliente': cliente,
                     'local': local,
-                    'descricao': descricao,
                     'data_criacao': datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                     'modulos': {}
                 }
                 st.session_state.projetos[nome_novo_projeto] = novo_projeto
                 st.session_state.projeto_atual = nome_novo_projeto
                 st.success(f"✅ Projeto '{nome_novo_projeto}' criado!")
-                st.rerun()
-            else:
-                st.error("Por favor, insira um nome para o projeto")
     
-    elif modo_projeto == "📂 Carregar Projeto":
+    with sidebar_tab2:
+        st.subheader("📂 Abrir Projeto")
         if st.session_state.projetos:
-            projeto_selecionado = st.selectbox("Selecione um projeto", list(st.session_state.projetos.keys()))
-            if st.button("📂 Abrir Projeto", key="btn_abrir_projeto"):
+            projeto_selecionado = st.selectbox("Selecione um projeto", list(st.session_state.projetos.keys()), key="sb_select_proj")
+            if st.button("📂 Abrir", use_container_width=True, key="btn_abrir_proj"):
                 st.session_state.projeto_atual = projeto_selecionado
-                st.rerun()
         else:
-            st.info("Nenhum projeto disponível. Crie um novo projeto.")
+            st.info("Nenhum projeto disponível.")
     
-    else:  # Ferramentas
+    with sidebar_tab3:
         st.subheader("🔧 Ferramentas")
-        if st.button("🗑️ Limpar Sessão", key="btn_limpar"):
-            st.session_state.clear()
-            st.rerun()
-        
-        if st.button("💾 Exportar Histórico", key="btn_export_hist"):
-            if st.session_state.historico_calculos:
-                df_hist = pd.DataFrame(st.session_state.historico_calculos)
-                csv = df_hist.to_csv(index=False)
-                st.download_button("📥 Baixar CSV", csv, "historico.csv", "text/csv")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🗑️ Limpar", use_container_width=True, key="btn_limpar_sess"):
+                st.session_state.clear()
+        with col2:
+            if st.button("💾 Exportar", use_container_width=True, key="btn_exp_hist"):
+                if st.session_state.historico_calculos:
+                    df_hist = pd.DataFrame(st.session_state.historico_calculos)
+                    csv = df_hist.to_csv(index=False)
+                    st.download_button("📥 CSV", csv, "historico.csv", "text/csv", key="dl_csv_hist")
     
     # Informações do projeto atual
+    st.divider()
     if st.session_state.projeto_atual:
-        st.divider()
         projeto = st.session_state.projetos[st.session_state.projeto_atual]
-        st.markdown(f"**Projeto Ativo:** {projeto['nome']}")
-        st.caption(f"Cliente: {projeto['cliente']}")
-        st.caption(f"Local: {projeto['local']}")
-        st.caption(f"Criado em: {projeto['data_criacao']}")
+        st.markdown(f"**📌 Ativo:** {projeto['nome']}")
+        st.caption(f"👤 {projeto['cliente']}")
+        st.caption(f"📍 {projeto['local']}")
 
 # ============ INTERFACE STREAMLIT ============
 

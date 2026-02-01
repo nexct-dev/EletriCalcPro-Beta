@@ -1,9 +1,11 @@
 #!/bin/bash
-# Script de Instalação - EletriCalcPro v3.0
+# Script de Instalação - EletriCalcPro v4.2
+# Suporte: Linux, macOS e WSL
 # Execute: bash install.sh
 
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║         EletriCalcPro v3.0 - Script de Instalação         ║"
+echo "║       EletriCalcPro v4.2 - Script de Instalação          ║"
+echo "║    Dimensionamento Elétrico Profissional com Projetos    ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -13,12 +15,13 @@ if command -v python3 &> /dev/null; then
     PYTHON_VERSION=$(python3 --version)
     echo "✅ Python encontrado: $PYTHON_VERSION"
 else
-    echo "❌ Python 3 não encontrado! Instale Python 3.7 ou superior."
+    echo "❌ Python 3 não encontrado!"
+    echo "   Instale Python 3.8 ou superior em https://www.python.org"
     exit 1
 fi
 
 echo ""
-echo "📦 Instalando dependências..."
+echo "📦 Preparando ambiente..."
 echo ""
 
 # Criar ambiente virtual (opcional)
@@ -27,41 +30,67 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
     echo "✅ Ambiente virtual criado!"
     echo ""
-    echo "🔌 Ativando ambiente virtual..."
-    source venv/bin/activate
-    echo "✅ Ambiente virtual ativado!"
 else
-    echo "✅ Ambiente virtual já existe"
-    source venv/bin/activate
+    echo "✅ Ambiente virtual encontrado"
+fi
+
+echo "🔌 Ativando ambiente virtual..."
+source venv/bin/activate
+echo "✅ Ambiente virtual ativado!"
+
+echo ""
+echo "📥 Atualizando pip..."
+pip install --upgrade pip setuptools wheel > /dev/null 2>&1
+echo "✅ pip atualizado"
+
+echo ""
+echo "📥 Instalando pacotes do requirements.txt..."
+echo "   (Isso pode levar alguns minutos na primeira instalação)"
+echo ""
+
+# Instalar com feedback visual
+pip install -r requirements.txt
+
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "✅ Instalação bem-sucedida!"
+else
+    echo ""
+    echo "❌ Erro durante instalação!"
+    echo "   Tente: pip install --upgrade -r requirements.txt"
+    exit 1
 fi
 
 echo ""
-echo "📥 Instalando pacotes de requirements.txt..."
-pip install --upgrade pip
-pip install -r requirements.txt
-
-echo ""
-echo "✅ Instalação completa!"
-echo ""
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║            Para executar o software:                       ║"
+echo "║           Próximos Passos - Para Executar:                ║"
 echo "║                                                            ║"
-echo "║  1. Ative o ambiente virtual:                             ║"
-echo "║     source venv/bin/activate  (Linux/Mac)                 ║"
-echo "║     venv\\Scripts\\activate     (Windows)                   ║"
+echo "║  1️⃣  Ative o ambiente virtual:                            ║"
+echo "║     source venv/bin/activate                              ║"
 echo "║                                                            ║"
-echo "║  2. Execute:                                              ║"
+echo "║  2️⃣  Inicie a aplicação:                                  ║"
 echo "║     streamlit run app.py                                  ║"
 echo "║                                                            ║"
-echo "║  3. Abra no navegador:                                    ║"
+echo "║  3️⃣  Abra no navegador:                                   ║"
 echo "║     http://localhost:8501                                 ║"
 echo "║                                                            ║"
 echo "╚════════════════════════════════════════════════════════════╝"
 echo ""
-echo "📚 Documentação:"
+echo "📚 Documentação Disponível:"
 echo "  • START_HERE.md - Comece por aqui!"
 echo "  • GUIA_USO.md - Como usar o software"
-echo "  • EXEMPLOS_PRATICOS.md - Casos reais"
+echo "  • EXEMPLOS_PRATICOS.md - Casos de uso reais"
+echo "  • TABELAS_NBR5410.md - Referência NBR 5410"
+echo "  • GUIA_RAPIDO_SPDA.md - Proteção contra descargas"
 echo ""
-echo "🎉 Boa sorte com seus projetos elétricos!"
+echo "✨ Funcionalidades v4.2:"
+echo "  ✅ Sistema de Projetos com salvamento"
+echo "  ✅ Dimensionamento de Condutores (NBR 5410)"
+echo "  ✅ Seleção de Transformadores (NBR 5356)"
+echo "  ✅ Proteção contra Surtos (SPDA - NBR 5419)"
+echo "  ✅ Cálculo de Curto-Circuito (IEC 60909)"
+echo "  ✅ Balanceamento de Fases"
+echo "  ✅ Exportação em múltiplos formatos"
+echo ""
+echo "🎉 Bom trabalho com seus projetos elétricos!"
 echo ""
